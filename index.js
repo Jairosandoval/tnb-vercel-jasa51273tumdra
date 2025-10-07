@@ -1,9 +1,17 @@
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.status(200).send("OK - TuMundoUtil callback server");
+});
+
 app.get("/callback", async (req, res) => {
-  console.log("Callback query:", req.query); // ver qué llega exactamente
+  // Log para ver qué llega
+  console.log("Callback query:", req.query);
 
   const { code, state, shop } = req.query;
 
-  // Solo exigimos 'code'
+  // Solo exigimos 'code'. Si falta 'state', seguimos igual.
   if (!code) {
     return res.status(400).send("Missing code");
   }
@@ -31,10 +39,14 @@ app.get("/callback", async (req, res) => {
       return res.status(500).send(`Token exchange failed: ${resp.status} ${text}`);
     }
 
-    // const data = await resp.json(); // opcional guardar
+    // const data = await resp.json(); // si querés guardar token/scope
 
+    // Redirigir al admin de la tienda (Apps)
     return res.redirect(302, "https://tumundoutil.mitiendanube.com/admin/v2/apps");
   } catch (err) {
     return res.status(500).send(`Error: ${err?.message || err}`);
   }
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
