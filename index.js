@@ -1,9 +1,9 @@
 app.get("/callback", async (req, res) => {
-  console.log("Callback query:", req.query); // para ver exactamente qué llega en Vercel Logs
+  console.log("Callback query:", req.query); // ver qué llega exactamente
 
   const { code, state, shop } = req.query;
 
-  // Solo exigimos 'code'. Si falta 'state', continuamos y lo advertimos en logs.
+  // Solo exigimos 'code'
   if (!code) {
     return res.status(400).send("Missing code");
   }
@@ -31,7 +31,7 @@ app.get("/callback", async (req, res) => {
       return res.status(500).send(`Token exchange failed: ${resp.status} ${text}`);
     }
 
-    // const data = await resp.json(); // guardar si luego querés
+    // const data = await resp.json(); // opcional guardar
 
     return res.redirect(302, "https://tumundoutil.mitiendanube.com/admin/v2/apps");
   } catch (err) {
