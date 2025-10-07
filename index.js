@@ -1,17 +1,14 @@
-// index.js
-// Requiere Node 18+ (fetch nativo) y variables en Vercel: CLIENT_ID, CLIENT_SECRET
-
-const express = require("express");
-const app = express();
-
-app.get("/", (req, res) => {
-  res.status(200).send("OK - TuMundoUtil callback server");
-});
-
 app.get("/callback", async (req, res) => {
+  console.log("Callback query:", req.query); // para ver exactamente qué llega en Vercel Logs
+
   const { code, state, shop } = req.query;
-  if (!code || !state) {
-    return res.status(400).send("Missing code/state");
+
+  // Solo exigimos 'code'. Si falta 'state', continuamos y lo advertimos en logs.
+  if (!code) {
+    return res.status(400).send("Missing code");
+  }
+  if (!state) {
+    console.warn("Warning: state ausente en callback");
   }
 
   try {
@@ -34,15 +31,10 @@ app.get("/callback", async (req, res) => {
       return res.status(500).send(`Token exchange failed: ${resp.status} ${text}`);
     }
 
-    // const data = await resp.json(); // si luego querés guardar el access_token, scope, etc.
+    // const data = await resp.json(); // guardar si luego querés
 
-    // Redirigir al admin (Apps)
     return res.redirect(302, "https://tumundoutil.mitiendanube.com/admin/v2/apps");
   } catch (err) {
     return res.status(500).send(`Error: ${err?.message || err}`);
   }
 });
-
-// Para local; en Vercel no es requerido pero no molesta
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
