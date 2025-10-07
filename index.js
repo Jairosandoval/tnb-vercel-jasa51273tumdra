@@ -37,7 +37,7 @@ app.get("/callback", async (req, res) => {
     if (!resp.ok) {
       const text = await resp.text();
       return res.status(500).send(`Token exchange failed: ${resp.status} ${text}`);
-    }
+    
 
     // const data = await resp.json(); // si querés guardar token/scope
 
